@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="25" xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.proyecto.DashboardController"
+      style="-fx-padding: 40; -fx-background-color: #1D1D1D;">
+
+    <!-- Título elegante -->
+    <VBox alignment="CENTER" spacing="5">
+        <Label text="SISTEMA DE HOTEL"
+               style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+    </VBox>
+
+    <!-- Botones principales -->
+    <VBox spacing="12" alignment="CENTER"
+          style="-fx-padding: 30; -fx-background-color: #272727; -fx-border-color: #333333; -fx-border-width: 1; -fx-border-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 5);">
+
+        <Button text="Clientes"
+                onAction="#abrirGestionClientes"
+                style="-fx-background-color: #3A3129; -fx-text-fill: #89785C; -fx-font-size: 14; -fx-font-family: 'Serif'; -fx-padding: 12 40 12 40; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 3);"
+                prefWidth="200" prefHeight="45"/>
+
+        <Button text="Habitaciones"
+                onAction="#abrirGestionHabitaciones"
+                style="-fx-background-color: #615541; -fx-text-fill: #E8E0D0; -fx-font-size: 14; -fx-font-family: 'Serif'; -fx-padding: 12 40 12 40; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 3);"
+                prefWidth="200" prefHeight="45"/>
+
+        <Button text="Reservas"
+                onAction="#abrirSistemaReservas"
+                style="-fx-background-color: #3A3129; -fx-text-fill: #89785C; -fx-font-size: 14; -fx-font-family: 'Serif'; -fx-padding: 12 40 12 40; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 3);"
+                prefWidth="200" prefHeight="45"/>
+
+        <Button text="Facturación"
+                onAction="#abrirFacturacion"
+                style="-fx-background-color: #615541; -fx-text-fill: #E8E0D0; -fx-font-size: 14; -fx-font-family: 'Serif'; -fx-padding: 12 40 12 40; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 3);"
+                prefWidth="200" prefHeight="45"/>
+    </VBox>
+
+</VBox>
