@@ -7,6 +7,7 @@ module org.proyecto.sistemahotel {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires java.logging;
+    requires java.sql;
 
     opens com.proyecto to javafx.fxml;
     exports com.proyecto;
