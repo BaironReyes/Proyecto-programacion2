@@ -40,9 +40,16 @@ public class DashboardController {
     }
 
     @FXML
-    private void abrirSistemaReservas(ActionEvent event) {
-        logger.info(() -> "Solicitado módulo de Reservas (en desarrollo)");
-        mostrarProximamente("Reservas");
+    private void abrirSistemaReservas(ActionEvent event) throws IOException {
+        logger.info(() -> "Navegando a Sistema de Reservas");
+
+        Parent root = FXMLLoader.load(getClass().getResource("Reservas.fxml"));
+        Scene scene = new Scene(root, 1000, 700); // Más grande para la tabla
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        stage.setScene(scene);
+        stage.setTitle("Sistema de Reservas");
+
     }
 
     @FXML
