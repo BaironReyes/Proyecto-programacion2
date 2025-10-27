@@ -55,7 +55,7 @@
         </HBox>
     </VBox>
 
-    <!-- Tabla de reservas actualizada para calzar con BD -->
+    <!-- Tabla de reservas -->
     <TableView fx:id="tablaReservas" prefHeight="300"
                style="-fx-background-color: #272727; -fx-border-color: #333333;">
         <columns>

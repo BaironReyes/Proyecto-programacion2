@@ -92,13 +92,13 @@ public class GestionClientesController {
             colIdentificacion.setCellValueFactory(new PropertyValueFactory<>("identificacion"));
             colTipoIdentificacion.setCellValueFactory(new PropertyValueFactory<>("tipoIdentificacion"));
 
-            // Asignar los datos a la tabla
+            // poner los datos a la tabla
             tablaClientes.setItems(clientesData);
         }
     }
 
     private void cargarClientesEjemplo() {
-        // Agregar los 3 clientes de ejemplo que usas en Reservas
+        // Agregar los 3 clientes de ejemplo en reservas
         clientesData.add(new ClienteTabla("1", "Bairon", "Reyes", "bairon@email.com", "1234-5678", "00123456", "DUI"));
         clientesData.add(new ClienteTabla("2", "Xiomara", "Arriaga", "xiomara@email.com", "2345-6789", "00234567", "ID"));
         clientesData.add(new ClienteTabla("3", "Ricardo", "Montoya", "ricardo@email.com", "3456-7890", "00345678", "Pasaporte"));
@@ -110,7 +110,6 @@ public class GestionClientesController {
     private void agregarCliente() {
         logger.info("Intentando agregar nuevo cliente");
 
-        // Validar campos obligatorios
         if (txtNombre.getText().isEmpty() || txtApellido.getText().isEmpty() ||
                 txtEmail.getText().isEmpty() || txtIdentificacion.getText().isEmpty() ||
                 cmbTipoIdentificacion.getValue() == null) {
@@ -167,6 +166,6 @@ public class GestionClientesController {
         alert.setContentText(mensaje);
         alert.showAndWait();
 
-        logger.info("Alerta mostrada: " + titulo + " - " + mensaje);
+        logger.info("Alerta mostrada: " + titulo + " " + mensaje);
     }
 }

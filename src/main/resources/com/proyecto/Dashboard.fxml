@@ -8,7 +8,7 @@
       fx:controller="com.proyecto.DashboardController"
       style="-fx-padding: 40; -fx-background-color: #1D1D1D;">
 
-    <!-- Título elegante -->
+    <!-- Título-->
     <VBox alignment="CENTER" spacing="5">
         <Label text="SISTEMA DE HOTEL"
                style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>

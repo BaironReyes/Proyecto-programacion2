@@ -205,7 +205,7 @@ public class FacturacionController {
         calcularReportes();
 
         mostrarAlerta("Factura Actualizada",
-                "Factura ID: " + facturaSeleccionada.getId() + " marcada como " + ESTADO_PAGADA + " exitosamente.");
+                "Factura ID: " + facturaSeleccionada.getId() + " marcada como " + ESTADO_PAGADA);
     }
 
     @FXML
@@ -240,7 +240,7 @@ public class FacturacionController {
                     }
                 }
             } catch (Exception _) {
-                logger.warning("Error al parsear fecha de factura: " + factura.getFecha());
+                logger.warning("Error al hacer fecha de factura: " + factura.getFecha());
             }
         }
 
@@ -258,7 +258,7 @@ public class FacturacionController {
             String totalLimpio = totalStr.replace("$", "").replace(",", "");
             return Double.parseDouble(totalLimpio);
         } catch (NumberFormatException _) {
-            logger.warning("Error al parsear total de factura: " + totalStr);
+            logger.warning("Error al hacer el total de factura: " + totalStr);
             return 0.0;
         }
     }

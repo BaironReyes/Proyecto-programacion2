@@ -73,7 +73,7 @@ public class GestionHabitacionesController {
         cmbTipo.getItems().addAll(TIPO_INDIVIDUAL, TIPO_DOBLE, TIPO_SUITE, TIPO_FAMILIAR);
         cmbEstado.getItems().addAll(ESTADO_DISPONIBLE, ESTADO_MANTENIMIENTO, ESTADO_RESERVADO);
 
-        logger.info("Controlador de Gestión de Habitaciones inicializado");
+        logger.info("Entrando a gestion de habitaciones");
 
         configurarTablaHabitaciones();
         cargarHabitacionesEjemplo();
@@ -98,7 +98,7 @@ public class GestionHabitacionesController {
         habitacionesData.add(new HabitacionTabla("3", "300", TIPO_SUITE, "$225.00", ESTADO_DISPONIBLE));
         habitacionesData.add(new HabitacionTabla("4", "202", TIPO_FAMILIAR, "$150.00", ESTADO_DISPONIBLE));
 
-        logger.info("Habitaciones de ejemplo cargadas: " + habitacionesData.size() + " habitaciones");
+        logger.info("Habitaciones de ejemplo: " + habitacionesData.size() + " habitaciones");
     }
 
     @FXML
@@ -133,7 +133,7 @@ public class GestionHabitacionesController {
 
     @FXML
     private void volverAlDashboard(ActionEvent event) throws IOException {
-        logger.info("Volviendo al Dashboard desde Gestión de Habitaciones");
+        logger.info("Volviendo al Dashboard");
 
         Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
         Scene scene = new Scene(root, 800, 600);
@@ -157,6 +157,6 @@ public class GestionHabitacionesController {
         alert.setContentText(mensaje);
         alert.showAndWait();
 
-        logger.info("Alerta mostrada: " + titulo + " - " + mensaje);
+        logger.info("Alerta mostrada: " + titulo + " " + mensaje);
     }
 }
