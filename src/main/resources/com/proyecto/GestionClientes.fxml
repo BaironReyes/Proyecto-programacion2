@@ -34,7 +34,7 @@
             <TextField fx:id="txtIdentificacion" promptText="Identificación" prefWidth="150"
                        style="-fx-background-color: #333333; -fx-text-fill: #E8E0D0; -fx-prompt-text-fill: #89785C; -fx-font-family: 'Serif'; -fx-border-color: #615541; -fx-border-radius: 4;"/>
             <ComboBox fx:id="cmbTipoIdentificacion" promptText="Tipo ID" prefWidth="120"
-                      style="-fx-background-color: #333333; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
+                      style="-fx-background-color: #FFFFFF; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
             <Button text="Agregar Cliente" onAction="#agregarCliente"
                     style="-fx-background-color: #615541; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif'; -fx-font-weight: bold; -fx-background-radius: 4;"/>
         </HBox>
@@ -44,13 +44,13 @@
     <TableView fx:id="tablaClientes" prefHeight="300"
                style="-fx-background-color: #272727; -fx-border-color: #333333;">
         <columns>
-            <TableColumn text="ID" prefWidth="50" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Nombre" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Apellido" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Email" prefWidth="150" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Teléfono" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Identificación" prefWidth="120" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Tipo ID" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colApellido" text="Apellido" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="150" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colIdentificacion" text="Identificación" prefWidth="120" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colTipoIdentificacion" text="Tipo ID" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
         </columns>
     </TableView>
 

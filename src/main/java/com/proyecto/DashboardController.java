@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.event.ActionEvent;
@@ -53,18 +52,16 @@ public class DashboardController {
     }
 
     @FXML
-    private void abrirFacturacion(ActionEvent event) {
-        logger.info(() -> "Solicitado módulo de Facturación (en desarrollo)");
-        mostrarProximamente("Facturación");
+    private void abrirFacturacion(ActionEvent event) throws IOException {
+        logger.info("Navegando a Facturación");
+
+        Parent root = FXMLLoader.load(getClass().getResource("Facturacion.fxml"));
+        Scene scene = new Scene(root, 1000, 700);
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        stage.setScene(scene);
+        stage.setTitle("Sistema de Facturación");
     }
 
-    private void mostrarProximamente(String modulo) {
-        logger.info(() -> "Mostrando alerta de 'Próximamente' para: " + modulo);
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Próximamente");
-        alert.setHeaderText(null);
-        alert.setContentText("Módulo de " + modulo + " aun programandose");
-        alert.showAndWait();
-    }
 }
