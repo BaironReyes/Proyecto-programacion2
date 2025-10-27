@@ -48,7 +48,6 @@ public class ReservasController {
     private ObservableList<ReservaTabla> reservasData = FXCollections.observableArrayList();
     private int contadorReservas = 1;
 
-    // Clases para mantener ID numéricos (como tu BD)
     public static class ClienteItem {
         private int id;
         private String nombreCompleto;
@@ -91,7 +90,6 @@ public class ReservasController {
         }
     }
 
-    // Clase que calza PERFECTAMENTE con tu BD y clase Reserva
     public static class ReservaTabla {
         private final SimpleStringProperty id;
         private final SimpleStringProperty idCliente;
@@ -109,8 +107,7 @@ public class ReservasController {
             this.checkOut = new SimpleStringProperty(checkOut);
             this.estado = new SimpleStringProperty(estado);
         }
-
-        // Getters que calzan con tu clase Reserva.java
+        //getters
         public String getId() { return id.get(); }
         public String getIdCliente() { return idCliente.get(); }
         public String getIdHabitacion() { return idHabitacion.get(); }
@@ -128,10 +125,8 @@ public class ReservasController {
             return;
         }
 
-        // Configurar tabla de reservas
         configurarTablaReservas();
 
-        // Cargar clientes con ID numéricos (como tu BD)
         ObservableList<ClienteItem> clientes = FXCollections.observableArrayList(
                 new ClienteItem(1, "Bairon Reyes"),
                 new ClienteItem(2, "Xiomara Arriaga"),
@@ -140,7 +135,7 @@ public class ReservasController {
         cmbClientes.setItems(clientes);
         cmbClientes.setPromptText("Seleccionar Cliente");
 
-        // Cargar habitaciones con ID numéricos (como tu BD)
+
         ObservableList<HabitacionItem> habitaciones = FXCollections.observableArrayList(
                 new HabitacionItem(1, "267", "Individual", 70.0),
                 new HabitacionItem(2, "280", "Doble", 110.0),
@@ -166,7 +161,7 @@ public class ReservasController {
 
     private void configurarTablaReservas() {
         if (tablaReservas != null && colId != null) {
-            // Configurar columnas que calzan con tu BD
+
             colId.setCellValueFactory(new PropertyValueFactory<>("id"));
             colIdCliente.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
             colIdHabitacion.setCellValueFactory(new PropertyValueFactory<>("idHabitacion"));
@@ -200,18 +195,18 @@ public class ReservasController {
             return;
         }
 
-        // Crear reserva con ID numéricos (como tu BD)
+        // Crear reserva
         String idReserva = String.valueOf(contadorReservas++);
         reservasData.add(new ReservaTabla(
                 idReserva,
-                String.valueOf(clienteSeleccionado.getId()),      // id_cliente (INT)
-                String.valueOf(habitacionSeleccionada.getId()),   // id_habitacion (INT)
-                dpCheckIn.getValue().toString(),                  // check_in (DATE)
-                dpCheckOut.getValue().toString(),                 // check_out (DATE)
-                "Confirmada"                                      // estado (ENUM)
+                String.valueOf(clienteSeleccionado.getId()),
+                String.valueOf(habitacionSeleccionada.getId()),
+                dpCheckIn.getValue().toString(),
+                dpCheckOut.getValue().toString(),
+                "Confirmada"
         ));
 
-        String mensaje = "Reserva creada (calza con BD):\n" +
+        String mensaje = "Reserva creada:\n" +
                 "ID Reserva: " + idReserva + "\n" +
                 "ID Cliente: " + clienteSeleccionado.getId() + "\n" +
                 "ID Habitación: " + habitacionSeleccionada.getId() + "\n" +
