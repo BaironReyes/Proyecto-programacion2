@@ -17,11 +17,11 @@
         <TextField fx:id="txtNumero" promptText="Número Habitación" prefWidth="150"
                    style="-fx-background-color: #272727; -fx-text-fill: #E8E0D0; -fx-prompt-text-fill: #89785C; -fx-font-family: 'Serif'; -fx-border-color: #333333; -fx-border-radius: 4;"/>
         <ComboBox fx:id="cmbTipo" promptText="Tipo" prefWidth="120"
-                  style="-fx-background-color: #272727; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
+                  style="-fx-background-color: #ffffff; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
         <TextField fx:id="txtPrecio" promptText="Precio" prefWidth="100"
                    style="-fx-background-color: #272727; -fx-text-fill: #E8E0D0; -fx-prompt-text-fill: #89785C; -fx-font-family: 'Serif'; -fx-border-color: #333333; -fx-border-radius: 4;"/>
         <ComboBox fx:id="cmbEstado" promptText="Estado" prefWidth="130"
-                  style="-fx-background-color: #272727; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
+                  style="-fx-background-color: #ffffff; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
         <Button text="Agregar" onAction="#agregarHabitacion"
                 style="-fx-background-color: #615541; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif'; -fx-font-weight: bold; -fx-background-radius: 4;"/>
     </HBox>
@@ -30,11 +30,11 @@
     <TableView fx:id="tablaHabitaciones" prefHeight="300"
                style="-fx-background-color: #272727; -fx-border-color: #333333;">
         <columns>
-            <TableColumn text="ID" prefWidth="50" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Número" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Tipo" prefWidth="120" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Precio" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-            <TableColumn text="Estado" prefWidth="120" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colNumero" text="Número" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colTipo" text="Tipo" prefWidth="120" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colPrecio" text="Precio" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+            <TableColumn fx:id="colEstado" text="Estado" prefWidth="120" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
         </columns>
     </TableView>
 
