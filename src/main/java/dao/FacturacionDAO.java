@@ -92,6 +92,7 @@ public class FacturacionDAO {
         }
         return null;
     }
+
     public Factura obtenerPorReserva(int idReserva) {
         String sql = SELECT + COL_ID + ", " + COL_ID_RESERVA + ", " + COL_TOTAL + ", " + COL_FECHA + ", " + COL_PAGADO +
                 " FROM facturas WHERE " + COL_ID_RESERVA + " = ?";

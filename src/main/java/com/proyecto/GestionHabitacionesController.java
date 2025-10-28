@@ -15,7 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-public class GestionHabitacionesController {
+public class    GestionHabitacionesController {
 
     private static final Logger logger = Logger.getLogger(GestionHabitacionesController.class.getName());
 
