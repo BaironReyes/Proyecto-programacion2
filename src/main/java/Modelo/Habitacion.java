@@ -6,13 +6,13 @@ package Modelo;
         private int id;
         private String numeroHabitacion;
         private String tipoHabitacion;
-        private BigDecimal precio;
+        private double precio;
         private String estado;
 
         public Habitacion() {
         }
 
-        public Habitacion(String numeroHabitacion, String tipoHabitacion, BigDecimal precio, String estado) {
+        public Habitacion(String numeroHabitacion, String tipoHabitacion, double precio, String estado) {
             this.numeroHabitacion = numeroHabitacion;
             this.tipoHabitacion = tipoHabitacion;
             this.precio = precio;
@@ -43,11 +43,11 @@ package Modelo;
             this.tipoHabitacion = tipoHabitacion;
         }
 
-        public BigDecimal getPrecio() {
+        public double getPrecio() {
             return precio;
         }
 
-        public void setPrecio(BigDecimal precio) {
+        public void setPrecio(double precio) {
             this.precio = precio;
         }
 

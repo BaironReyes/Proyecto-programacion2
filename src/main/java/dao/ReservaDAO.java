@@ -9,15 +9,15 @@ import java.util.List;
 
 public class ReservaDAO {
 
-    public boolean crearReserva(int idCliente, int idHabitacion, LocalDate checkIn, LocalDate checkOut) {
+    public boolean crearReserva(Reserva reserva) {
         String sql = "INSERT INTO reservas (id_cliente, id_habitacion, check_in, check_out, estado) VALUES (?, ?, ?, ?, 'Confirmada')";
         try (Connection conn = Conexion.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, idCliente);
-            stmt.setInt(2, idHabitacion);
-            stmt.setDate(3, Date.valueOf(checkIn));
-            stmt.setDate(4, Date.valueOf(checkOut));
+            stmt.setInt(1, reserva.getIdCliente());
+            stmt.setInt(2, reserva.getIdHabitacion());
+            stmt.setDate(3, java.sql.Date.valueOf(reserva.getCheckIn()));
+            stmt.setDate(4, java.sql.Date.valueOf(reserva.getCheckOut()));
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {

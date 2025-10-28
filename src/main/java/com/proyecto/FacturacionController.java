@@ -1,5 +1,10 @@
 package com.proyecto;
 
+import dao.FacturaDAO;
+import dao.ReservaDAO;
+import Modelo.Factura;
+import Modelo.Reserva;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +24,9 @@ import java.util.logging.Logger;
 public class FacturacionController {
 
     private static final Logger logger = Logger.getLogger(FacturacionController.class.getName());
+
+    private FacturaDAO facturaDAO = new FacturaDAO();
+    private ReservaDAO reservaDAO = new ReservaDAO();
 
     // Constantes para mensajes y estados
     private static final String MENSAJE_ERROR = "Error";
@@ -97,7 +105,7 @@ public class FacturacionController {
         dpFechaFin.setValue(LocalDate.now());
 
         configurarTablas();
-        cargarDatosEjemplo();
+        cargarDatosDesdeBD();
         calcularReportes();
     }
 
@@ -120,16 +128,38 @@ public class FacturacionController {
         }
     }
 
-    private void cargarDatosEjemplo() {
-        logger.info("Cargando datos de ejemplo para facturación");
+    private void cargarDatosDesdeBD() {
+        logger.info("Cargando datos reales desde BD");
 
-        reservasData.add(new ReservaTabla("1", "Bairon Reyes", "267", "$210.00"));
-        reservasData.add(new ReservaTabla("2", "Xiomara Arriaga", "280", "$330.00"));
-        reservasData.add(new ReservaTabla("3", "Ricardo Montoya", "300", "$675.00"));
+        // Limpiar listas
+        reservasData.clear();
+        facturasData.clear();
 
-        facturasData.add(new FacturaTabla("1", "1", "$150.00", LocalDate.now().minusDays(10).toString(), ESTADO_PAGADA));
-        facturasData.add(new FacturaTabla("2", "2", "$225.00", LocalDate.now().minusDays(5).toString(), ESTADO_PAGADA));
+        // Cargar reservas sin facturar
+        List<Reserva> reservas = reservaDAO.obtenerReservasActivas();
+        for (Reserva r : reservas) {
+            reservasData.add(new ReservaTabla(
+                    String.valueOf(r.getId()),
+                    String.valueOf(r.getIdCliente()),
+                    String.valueOf(r.getIdHabitacion()),
+                    "Pendiente" // en lugar del total
+            ));
+        }
+
+        // Cargar facturas
+        List<Factura> facturas = facturaDAO.obtenerTodasFacturas();
+        for (Factura f : facturas) {
+            facturasData.add(new FacturaTabla(
+                    String.valueOf(f.getIdFactura()),
+                    String.valueOf(f.getIdReserva()),
+                    "$" + String.format("%.2f", f.getTotal()),
+                    f.getFecha().toString(),
+                    f.getEstado()
+            ));
+        }
+
     }
+
 
     @FXML
     private void generarFactura() {
@@ -187,26 +217,42 @@ public class FacturacionController {
     private void marcarComoPagado() {
         logger.info("Marcando factura como pagada");
 
+        // Obtener la factura seleccionada
         FacturaTabla facturaSeleccionada = tablaFacturas.getSelectionModel().getSelectedItem();
         if (facturaSeleccionada == null) {
             mostrarAlerta(MENSAJE_ERROR, "Seleccione una factura para marcar como pagada");
             return;
         }
 
-        facturasData.remove(facturaSeleccionada);
-        facturasData.add(new FacturaTabla(
-                facturaSeleccionada.getId(),
-                facturaSeleccionada.getIdReserva(),
-                facturaSeleccionada.getTotal(),
-                facturaSeleccionada.getFecha(),
-                ESTADO_PAGADA
-        ));
+        try {
+            // Actualizar en la base de datos
+            boolean ok = facturaDAO.actualizarEstado(
+                    Integer.parseInt(facturaSeleccionada.getId()),
+                    ESTADO_PAGADA
+            );
 
+            if (ok) {
+                // Actualizar en la tabla de la interfaz
+                facturaSeleccionada.estado.set(ESTADO_PAGADA);
+                tablaFacturas.refresh();
+
+                mostrarAlerta("Factura Actualizada",
+                        "Factura ID: " + facturaSeleccionada.getId() + " marcada como Pagada.");
+                logger.info("Factura ID " + facturaSeleccionada.getId() + " marcada como pagada correctamente.");
+            } else {
+                mostrarAlerta(MENSAJE_ERROR, "No se pudo actualizar la factura en la base de datos.");
+                logger.warning("Error al actualizar el estado de la factura en la base de datos.");
+            }
+
+        } catch (Exception e) {
+            mostrarAlerta(MENSAJE_ERROR, "Error al actualizar la factura: " + e.getMessage());
+            logger.severe("Error al marcar factura como pagada: " + e.getMessage());
+        }
+
+        // Recalcular reportes para actualizar totales y estado general
         calcularReportes();
-
-        mostrarAlerta("Factura Actualizada",
-                "Factura ID: " + facturaSeleccionada.getId() + " marcada como " + ESTADO_PAGADA);
     }
+
 
     @FXML
     private void volverAlDashboard(ActionEvent event) throws IOException {

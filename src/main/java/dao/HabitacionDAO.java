@@ -38,7 +38,7 @@ public class HabitacionDAO {
                 h.setId(rs.getInt("id"));
                 h.setNumeroHabitacion(rs.getString("numero_habitacion"));
                 h.setTipoHabitacion(rs.getString("tipo_habitacion"));
-                h.setPrecio(rs.getBigDecimal("precio"));
+                h.setPrecio(rs.getDouble("precio"));
                 h.setEstado(rs.getString("estado"));
                 habitaciones.add(h);
             }

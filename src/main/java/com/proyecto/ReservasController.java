@@ -1,5 +1,14 @@
 package com.proyecto;
 
+import dao.ClienteDAO;
+import dao.HabitacionDAO;
+import Modelo.Cliente;
+import Modelo.Habitacion;
+import dao.ReservaDAO;
+import Modelo.Reserva;
+
+import java.math.BigDecimal;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +27,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 
 public class ReservasController {
+
+    private ClienteDAO clienteDAO = new ClienteDAO();
+    private HabitacionDAO habitacionDAO = new HabitacionDAO();
+    private ReservaDAO reservaDAO = new ReservaDAO();
 
     private static final Logger logger = Logger.getLogger(ReservasController.class.getName());
 
@@ -46,7 +59,28 @@ public class ReservasController {
     @FXML private TableColumn<ReservaTabla, String> colEstado;
 
     private ObservableList<ReservaTabla> reservasData = FXCollections.observableArrayList();
+
     private int contadorReservas = 1;
+
+    private void cargarReservasDesdeBD() {
+        reservasData.clear();
+        List<Reserva> lista = reservaDAO.obtenerReservasActivas();
+        if (lista != null) {
+            for (Reserva r : lista) {
+                reservasData.add(new ReservaTabla(
+                        String.valueOf(r.getId()),
+                        String.valueOf(r.getIdCliente()),
+                        String.valueOf(r.getIdHabitacion()),
+                        r.getCheckIn().toString(),
+                        r.getCheckOut().toString(),
+                        String.valueOf(r.getEstado())
+                ));
+            }
+        } else {
+            System.out.println("No se pudieron obtener las reservas desde la BD.");
+        }
+        tablaReservas.setItems(reservasData);
+    }
 
     public static class ClienteItem {
         private int id;
@@ -125,25 +159,26 @@ public class ReservasController {
             return;
         }
 
+        cargarReservasDesdeBD();
+
         configurarTablaReservas();
 
-        ObservableList<ClienteItem> clientes = FXCollections.observableArrayList(
-                new ClienteItem(1, "Bairon Reyes"),
-                new ClienteItem(2, "Xiomara Arriaga"),
-                new ClienteItem(3, "Ricardo Montoya")
-        );
+        List<Cliente> clientesBD = clienteDAO.listarClientes();
+        ObservableList<ClienteItem> clientes = FXCollections.observableArrayList();
+        for (Cliente c : clientesBD) {
+            clientes.add(new ClienteItem(c.getId(), c.getNombre() + " " + c.getApellido()));
+        }
         cmbClientes.setItems(clientes);
         cmbClientes.setPromptText("Seleccionar Cliente");
 
-
-        ObservableList<HabitacionItem> habitaciones = FXCollections.observableArrayList(
-                new HabitacionItem(1, "267", "Individual", 70.0),
-                new HabitacionItem(2, "280", "Doble", 110.0),
-                new HabitacionItem(3, "300", "Suite", 225.0),
-                new HabitacionItem(4, "202", "Familiar", 150.0)
-        );
+        List<Habitacion> habitacionesBD = habitacionDAO.listarHabitaciones();
+        ObservableList<HabitacionItem> habitaciones = FXCollections.observableArrayList();
+        for (Habitacion h : habitacionesBD) {
+            habitaciones.add(new HabitacionItem(h.getId(), h.getNumeroHabitacion(), h.getTipoHabitacion(), h.getPrecio()));
+        }
         cmbHabitaciones.setItems(habitaciones);
         cmbHabitaciones.setPromptText("Seleccionar Habitación");
+
 
         logger.info("ComboBoxes Clientes: " + clientes.size() + ", Habitaciones: " + habitaciones.size());
 
@@ -195,30 +230,36 @@ public class ReservasController {
             return;
         }
 
-        // Crear reserva
-        String idReserva = String.valueOf(contadorReservas++);
-        reservasData.add(new ReservaTabla(
-                idReserva,
-                String.valueOf(clienteSeleccionado.getId()),
-                String.valueOf(habitacionSeleccionada.getId()),
-                dpCheckIn.getValue().toString(),
-                dpCheckOut.getValue().toString(),
-                "Confirmada"
-        ));
+        // Crear el objeto Reserva
+        Reserva nuevaReserva = new Reserva();
+        nuevaReserva.setIdCliente(clienteSeleccionado.getId());
+        nuevaReserva.setIdHabitacion(habitacionSeleccionada.getId());
+        nuevaReserva.setCheckIn(dpCheckIn.getValue());
+        nuevaReserva.setCheckOut(dpCheckOut.getValue());
+        double precioNoche = habitacionSeleccionada.getPrecio();
+        long noches = ChronoUnit.DAYS.between(dpCheckIn.getValue(), dpCheckOut.getValue());
+        double total = noches * precioNoche;
+        //nuevaReserva.setTotal(total);
 
-        String mensaje = "Reserva creada:\n" +
-                "ID Reserva: " + idReserva + "\n" +
-                "ID Cliente: " + clienteSeleccionado.getId() + "\n" +
-                "ID Habitación: " + habitacionSeleccionada.getId() + "\n" +
-                "Cliente: " + clienteSeleccionado.getNombreCompleto() + "\n" +
-                "Habitación: " + habitacionSeleccionada.getNumero() + "\n" +
-                "Check-in: " + dpCheckIn.getValue() + "\n" +
-                "Check-out: " + dpCheckOut.getValue() + "\n" +
-                "Total: " + lblTotal.getText();
+        boolean ok = reservaDAO.crearReserva(nuevaReserva);
 
-        mostrarAlerta(TITULO_RESERVA_CREADA, mensaje);
-        limpiarFormulario();
+        if (ok) {
+            mostrarAlerta(TITULO_RESERVA_CREADA,
+                    "Reserva guardada en la base de datos:\n" +
+                            "Cliente: " + clienteSeleccionado.getNombreCompleto() + "\n" +
+                            "Habitación: " + habitacionSeleccionada.getNumero() + "\n" +
+                            "Check-in: " + dpCheckIn.getValue() + "\n" +
+                            "Check-out: " + dpCheckOut.getValue() + "\n" +
+                            "Total: $" + total
+            );
+
+            cargarReservasDesdeBD();
+            limpiarFormulario();
+        } else {
+            mostrarAlerta(TITULO_ERROR, "No se pudo guardar la reserva en la base de datos.");
+        }
     }
+
 
     @FXML
     private void verDisponibilidad() {

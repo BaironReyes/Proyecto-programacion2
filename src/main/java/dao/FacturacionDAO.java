@@ -56,11 +56,11 @@ public class FacturacionDAO {
 
             while (rs.next()) {
                 Factura f = new Factura();
-                f.setId(rs.getInt(COL_ID));
+                f.setIdFactura(rs.getInt(COL_ID));
                 f.setIdReserva(rs.getInt(COL_ID_RESERVA));
-                f.setTotal(rs.getBigDecimal(COL_TOTAL));
+                f.setTotal(rs.getDouble(COL_TOTAL));
                 f.setFecha(rs.getDate(COL_FECHA).toLocalDate());
-                f.setPagado(rs.getBoolean(COL_PAGADO));
+                f.setPagado((rs.getBoolean(COL_PAGADO)));
                 facturas.add(f);
             }
         } catch (SQLException e) {
@@ -79,9 +79,9 @@ public class FacturacionDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Factura f = new Factura();
-                    f.setId(rs.getInt(COL_ID));
+                    f.setIdFactura(rs.getInt(COL_ID));
                     f.setIdReserva(rs.getInt(COL_ID_RESERVA));
-                    f.setTotal(rs.getBigDecimal(COL_TOTAL));
+                    f.setTotal(rs.getDouble(COL_TOTAL));
                     f.setFecha(rs.getDate(COL_FECHA).toLocalDate());
                     f.setPagado(rs.getBoolean(COL_PAGADO));
                     return f;
@@ -102,9 +102,9 @@ public class FacturacionDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Factura f = new Factura();
-                    f.setId(rs.getInt(COL_ID));
+                    f.setIdFactura(rs.getInt(COL_ID));
                     f.setIdReserva(rs.getInt(COL_ID_RESERVA));
-                    f.setTotal(rs.getBigDecimal(COL_TOTAL));
+                    f.setTotal(rs.getDouble(COL_TOTAL));
                     f.setFecha(rs.getDate(COL_FECHA).toLocalDate());
                     f.setPagado(rs.getBoolean(COL_PAGADO));
                     return f;
