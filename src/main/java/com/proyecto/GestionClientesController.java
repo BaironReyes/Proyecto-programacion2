@@ -153,7 +153,7 @@ public class GestionClientesController {
 
     private void cargarClientesDesdeBD() {
         clientesData.clear();
-        List<Cliente> lista = clienteDAO.listarClientes(); // asume que ClienteDAO tiene listarClientes()
+        List<Cliente> lista = clienteDAO.listarClientes();
         if (lista != null) {
             for (Cliente c : lista) {
                 String id = String.valueOf(c.getId());

@@ -1,5 +1,8 @@
 package com.proyecto;
 
+import dao.HabitacionDAO;
+import Modelo.Habitacion;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,6 +19,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 public class GestionHabitacionesController {
+
+    private HabitacionDAO habitacionDAO = new HabitacionDAO();
 
     private static final Logger logger = Logger.getLogger(GestionHabitacionesController.class.getName());
 
@@ -76,7 +81,7 @@ public class GestionHabitacionesController {
         logger.info("Entrando a gestion de habitaciones");
 
         configurarTablaHabitaciones();
-        cargarHabitacionesEjemplo();
+        cargarHabitacionesDesdeBD();
     }
 
     private void configurarTablaHabitaciones() {
@@ -91,44 +96,52 @@ public class GestionHabitacionesController {
         }
     }
 
-    private void cargarHabitacionesEjemplo() {
-        // Usar constantes para los estados y tipos
-        habitacionesData.add(new HabitacionTabla("1", "267", TIPO_INDIVIDUAL, "$70.00", ESTADO_DISPONIBLE));
-        habitacionesData.add(new HabitacionTabla("2", "280", TIPO_DOBLE, "$110.00", ESTADO_DISPONIBLE));
-        habitacionesData.add(new HabitacionTabla("3", "300", TIPO_SUITE, "$225.00", ESTADO_DISPONIBLE));
-        habitacionesData.add(new HabitacionTabla("4", "202", TIPO_FAMILIAR, "$150.00", ESTADO_DISPONIBLE));
-
-        logger.info("Habitaciones de ejemplo: " + habitacionesData.size() + " habitaciones");
+    private void cargarHabitacionesDesdeBD() {
+        habitacionesData.clear();
+        List<Habitacion> lista = habitacionDAO.listarHabitaciones();
+        if (lista != null) {
+            for (Habitacion h : lista) {
+                String id = String.valueOf(h.getId());
+                habitacionesData.add(new HabitacionTabla(
+                        id,
+                        h.getNumeroHabitacion(),
+                        h.getTipoHabitacion(),
+                        String.valueOf(h.getPrecio()),
+                        h.getEstado()
+                ));
+            }
+        } else {
+            System.out.println("No se pudieron obtener las habitaciones desde la BD.");
+        }
+        tablaHabitaciones.setItems(habitacionesData);
     }
+
 
     @FXML
     private void agregarHabitacion() {
         logger.info("Intentando agregar nueva habitación");
 
-        if (txtNumero.getText().isEmpty() || cmbTipo.getValue() == null ||
-                txtPrecio.getText().isEmpty() || cmbEstado.getValue() == null) {
+        if (txtNumero.getText().isEmpty() || cmbTipo.getValue() == null || txtPrecio.getText().isEmpty()) {
             mostrarAlerta("Error", "Complete todos los campos obligatorios");
             return;
         }
 
-        String nuevoId = String.valueOf(contadorHabitaciones++);
-        habitacionesData.add(new HabitacionTabla(
-                nuevoId,
+        boolean ok = habitacionDAO.insertarHabitacion(
                 txtNumero.getText(),
                 cmbTipo.getValue(),
-                "$" + txtPrecio.getText(),
+                Double.parseDouble(txtPrecio.getText()),
                 cmbEstado.getValue()
-        ));
+        );
 
-        mostrarAlerta("Habitación Agregada",
-                "Habitación agregada exitosamente:\n" +
-                        "Número: " + txtNumero.getText() + "\n" +
-                        "Tipo: " + cmbTipo.getValue() + "\n" +
-                        "Precio: $" + txtPrecio.getText() + "\n" +
-                        "Estado: " + cmbEstado.getValue() + "\n\n" +
-                        "La habitación ahora aparece en la tabla.");
-
-        limpiarFormulario();
+        if (ok) {
+            mostrarAlerta("Éxito", "Habitación guardada en la base de datos.");
+            cargarHabitacionesDesdeBD(); // refresca la tabla
+            txtNumero.clear();
+            txtPrecio.clear();
+            cmbTipo.setValue(null);
+        } else {
+            mostrarAlerta("Error", "No se pudo guardar la habitación.");
+        }
     }
 
     @FXML
