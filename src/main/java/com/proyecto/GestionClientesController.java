@@ -15,6 +15,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import dao.ClienteDAO;
+import Modelo.Cliente;
+import java.util.List;
+
 public class GestionClientesController {
 
     private static final Logger logger = Logger.getLogger(GestionClientesController.class.getName());
@@ -37,6 +41,8 @@ public class GestionClientesController {
 
     private ObservableList<ClienteTabla> clientesData = FXCollections.observableArrayList();
     private int contadorClientes = 4; // Empezar después de los 3 de ejemplo
+    private ClienteDAO clienteDAO = new ClienteDAO();
+
 
     // Clase interna para manejar los datos de la tabla
     public static class ClienteTabla {
@@ -77,8 +83,8 @@ public class GestionClientesController {
         // Configurar tabla de clientes
         configurarTablaClientes();
 
-        // Cargar clientes de ejemplo
-        cargarClientesEjemplo();
+        // Cargar clientes de BD
+        cargarClientesDesdeBD();
     }
 
     private void configurarTablaClientes() {
@@ -117,26 +123,57 @@ public class GestionClientesController {
             return;
         }
 
-        // Agregar nuevo cliente a la tabla
-        String nuevoId = String.valueOf(contadorClientes++);
-        clientesData.add(new ClienteTabla(
-                nuevoId,
+        // Insertar en la base de datos
+        boolean ok = clienteDAO.insertarCliente(
                 txtNombre.getText(),
                 txtApellido.getText(),
                 txtEmail.getText(),
                 txtTelefono.getText(),
                 txtIdentificacion.getText(),
                 cmbTipoIdentificacion.getValue()
-        ));
+        );
 
-        mostrarAlerta("Nuevo Cliente",
-                "Cliente agregado :\n" +
-                        "Nombre: " + txtNombre.getText() + " " + txtApellido.getText() + "\n" +
-                        "Email: " + txtEmail.getText() + "\n" +
-                        "ID: " + txtIdentificacion.getText() + "\n\n");
+        if (ok) {
+            mostrarAlerta("Éxito", "Cliente guardado en la base de datos.");
+            // recargar la lista desde la BD para reflejar el nuevo registro y su id real
+            cargarClientesDesdeBD();
 
-        limpiarFormulario();
+            // limpiar campos
+            txtNombre.clear();
+            txtApellido.clear();
+            txtEmail.clear();
+            txtTelefono.clear();
+            txtIdentificacion.clear();
+            cmbTipoIdentificacion.setValue(null);
+        } else {
+            mostrarAlerta("Error", "No se pudo guardar el cliente en la base de datos.");
+        }
     }
+
+
+    private void cargarClientesDesdeBD() {
+        clientesData.clear();
+        List<Cliente> lista = clienteDAO.listarClientes(); // asume que ClienteDAO tiene listarClientes()
+        if (lista != null) {
+            for (Cliente c : lista) {
+                String id = String.valueOf(c.getId());
+                clientesData.add(new ClienteTabla(
+                        id,
+                        c.getNombre(),
+                        c.getApellido(),
+                        c.getEmail(),
+                        c.getTelefono(),
+                        c.getIdentificacion(),
+                        c.getTipoIdentificacion()
+                ));
+            }
+        } else {
+            // Si listarClientes devuelve null, podrías mostrar alerta o log
+            System.out.println("No se pudo obtener lista de clientes desde BD.");
+        }
+        tablaClientes.setItems(clientesData);
+    }
+
 
     @FXML
     private void volverAlDashboard(ActionEvent event) throws IOException {
