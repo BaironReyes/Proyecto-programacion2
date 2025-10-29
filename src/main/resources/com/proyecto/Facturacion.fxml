@@ -4,93 +4,42 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox spacing="20" xmlns="http://javafx.com/javafx/11.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.proyecto.FacturacionController"
-      style="-fx-padding: 20; -fx-background-color: #1D1D1D;">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.proyecto.FacturacionController"
+            prefWidth="1000" prefHeight="600">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-
-    <Label text="Sistema de Facturación y Reportes"
-           style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-
-    <VBox spacing="15" alignment="CENTER_LEFT"
-          style="-fx-padding: 20; -fx-background-color: #272727; -fx-border-color: #333333; -fx-border-width: 1; -fx-border-radius: 8;">
-
-        <Label text="Reportes Básicos"
-               style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-
-        <HBox spacing="15" alignment="CENTER_LEFT">
-            <Label text="Período:" style="-fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
-            <DatePicker fx:id="dpFechaInicio" promptText="Fecha inicio" prefWidth="150"
-                        style="-fx-background-color: #333333; -fx-text-fill: #E8E0D0;"/>
-            <DatePicker fx:id="dpFechaFin" promptText="Fecha fin" prefWidth="150"
-                        style="-fx-background-color: #333333; -fx-text-fill: #E8E0D0;"/>
-            <Button text="Generar Reporte" onAction="#generarReporteIngresos"
-                    style="-fx-background-color: #615541; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif'; -fx-background-radius: 4;"/>
-        </HBox>
-
-        <HBox spacing="30" alignment="CENTER_LEFT">
-            <VBox spacing="5">
-                <Label text="Total Ingresos" style="-fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
-                <Label fx:id="lblTotalIngresos" text="0.00$"
-                       style="-fx-text-fill: #89785C; -fx-font-weight: bold; -fx-font-size: 16; -fx-font-family: 'Serif';"/>
-            </VBox>
-            <VBox spacing="5">
-                <Label text="Facturas Generadas" style="-fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
-                <Label fx:id="lblFacturasGeneradas" text="0"
-                       style="-fx-text-fill: #89785C; -fx-font-weight: bold; -fx-font-size: 16; -fx-font-family: 'Serif';"/>
-            </VBox>
-            <VBox spacing="5">
-                <Label text="Ocupación Promedio" style="-fx-text-fill: #E8E0D0; -fx-font-family: 'Serif';"/>
-                <Label fx:id="lblOcupacionPromedio" text="0%"
-                       style="-fx-text-fill: #89785C; -fx-font-weight: bold; -fx-font-size: 16; -fx-font-family: 'Serif';"/>
-            </VBox>
-        </HBox>
-    </VBox>
-
-    <HBox spacing="20">
-        <VBox spacing="10" prefWidth="400">
-            <Label text="Reservas para Facturar"
-                   style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-
-            <TableView fx:id="tablaReservasParaFacturar" prefHeight="200"
-                       style="-fx-background-color: #272727; -fx-border-color: #333333;">
+    <HBox spacing="20" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10">
+        <!-- Panel Izquierdo: Reservas Pendientes -->
+        <VBox spacing="10" prefWidth="480">
+            <Label text="Reservas Pendientes" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+            <TableView fx:id="tablaReservas" prefHeight="400">
                 <columns>
-                    <TableColumn fx:id="colReservaId2" text="ID Reserva" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-                    <TableColumn fx:id="colReservaCliente" text="Cliente" prefWidth="150" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-                    <TableColumn fx:id="colReservaHabitacion" text="Habitación" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-                    <TableColumn fx:id="colReservaTotal" text="Total" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+                    <TableColumn fx:id="colIdReserva" text="ID" prefWidth="50"/>
+                    <TableColumn fx:id="colIdCliente" text="Cliente" prefWidth="100"/>
+                    <TableColumn fx:id="colIdHabitacion" text="Habitación" prefWidth="100"/>
+                    <TableColumn fx:id="colCheckIn" text="Check In" prefWidth="100"/>
+                    <TableColumn fx:id="colCheckOut" text="Check Out" prefWidth="100"/>
+                    <TableColumn fx:id="colEstado" text="Estado" prefWidth="100"/>
                 </columns>
             </TableView>
-
-            <Button text="Generar Factura" onAction="#generarFactura"
-                    style="-fx-background-color: #615541; -fx-text-fill: #E8E0D0; -fx-font-family: 'Serif'; -fx-background-radius: 4;"/>
+            <Button fx:id="btnGenerarFactura" text="Generar Factura" onAction="#generarFactura" prefWidth="200"/>
         </VBox>
 
-        <VBox spacing="10" prefWidth="400">
-            <Label text="Facturas Existentes"
-                   style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-
-            <TableView fx:id="tablaFacturas" prefHeight="200"
-                       style="-fx-background-color: #272727; -fx-border-color: #333333;">
+        <!-- Panel Derecho: Facturas -->
+        <VBox spacing="10" prefWidth="480">
+            <Label text="Facturas Existentes" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+            <TableView fx:id="tablaFacturas" prefHeight="400">
                 <columns>
-                    <TableColumn fx:id="colFacturaId" text="ID Factura" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-                    <TableColumn fx:id="colReservaId" text="ID Reserva" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-                    <TableColumn fx:id="colFacturaTotal" text="Total" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-                    <TableColumn fx:id="colFacturaFecha" text="Fecha" prefWidth="100" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
-                    <TableColumn fx:id="colFacturaEstado" text="Estado" prefWidth="80" style="-fx-text-fill: #89785C; -fx-font-family: 'Serif';"/>
+                    <TableColumn fx:id="colFacturaId" text="ID Factura" prefWidth="100"/>
+                    <TableColumn fx:id="colFacturaReserva" text="Reserva" prefWidth="100"/>
+                    <TableColumn fx:id="colTotal" text="Total" prefWidth="100"/>
+                    <TableColumn fx:id="colFecha" text="Fecha" prefWidth="100"/>
+                    <TableColumn fx:id="colPagado" text="Pagado" prefWidth="80"/>
                 </columns>
             </TableView>
-
-            <Button text="Marcar como Pagado" onAction="#marcarComoPagado"
-                    style="-fx-background-color: #3A3129; -fx-text-fill: #89785C; -fx-font-family: 'Serif'; -fx-background-radius: 4;"/>
+            <HBox spacing="10">
+                <Button fx:id="btnMarcarPagado" text="Marcar como Pagado" onAction="#marcarComoPagada" prefWidth="200"/>
+                <Button fx:id="btnReporteIngresos" text="Generar Reporte" onAction="#generarReporteIngresos" prefWidth="200"/>
+            </HBox>
         </VBox>
     </HBox>
-
-    <Button text="Volver al Dashboard" onAction="#volverAlDashboard"
-            style="-fx-background-color: #3A3129; -fx-text-fill: #89785C; -fx-font-family: 'Serif'; -fx-font-weight: bold; -fx-background-radius: 4;"/>
-
-</VBox>
+</AnchorPane>

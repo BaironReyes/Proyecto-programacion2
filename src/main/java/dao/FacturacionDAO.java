@@ -1,130 +1,93 @@
 package dao;
 
 import Modelo.Factura;
-import java.math.BigDecimal;
+import Modelo.Reserva;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FacturacionDAO {
 
-    // Nombres de columnas (por claridad y evitar errores)
-    private static final String COL_ID = "id";
-    private static final String COL_ID_RESERVA = "id_reserva";
-    private static final String COL_TOTAL = "total";
-    private static final String COL_FECHA = "fecha";
-    private static final String COL_PAGADO = "pagado";
+    private Connection con;
 
-    // ==========================================================
-    // === CREAR FACTURA
-    // ==========================================================
-    public boolean crearFactura(int idReserva, BigDecimal total) {
-        String sql = "INSERT INTO facturas (id_reserva, total, fecha, pagado) VALUES (?, ?, CURDATE(), false)";
-        try (Connection conn = Conexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idReserva);
-            stmt.setBigDecimal(2, total);
-
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Error al crear factura: " + e.getMessage());
-            return false;
-        }
+    public FacturacionDAO() throws SQLException {
+        con = Conexion.obtenerConexion();
     }
 
-    // ==========================================================
-    // === MARCAR COMO PAGADA
-    // ==========================================================
-    public boolean marcarComoPagada(int idFactura) {
-        String sql = "UPDATE facturas SET pagado = true WHERE id = ?";
-        try (Connection conn = Conexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idFactura);
-            return stmt.executeUpdate() > 0;
+    // 🔹 Obtener reservas pendientes de facturar
+    public List<Reserva> obtenerReservasPendientes() {
+        List<Reserva> reservas = new ArrayList<>();
+        String sql = "SELECT r.id, r.id_cliente, r.id_habitacion, r.check_in, r.check_out, r.estado " +
+                "FROM reservas r " +
+                "WHERE r.id NOT IN (SELECT id_reserva FROM facturas)";
+        try {
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Reserva r = new Reserva();
+                r.setId(rs.getInt("id"));
+                r.setIdCliente(rs.getInt("id_cliente"));
+                r.setIdHabitacion(rs.getInt("id_habitacion"));
+                r.setCheckIn(rs.getDate("check_in").toLocalDate());
+                r.setCheckOut(rs.getDate("check_out").toLocalDate());
+                r.setEstado(rs.getString("estado"));
+                reservas.add(r);
+            }
         } catch (SQLException e) {
-            System.err.println("Error al marcar factura como pagada: " + e.getMessage());
-            return false;
+            System.out.println("Error al obtener reservas pendientes: " + e.getMessage());
         }
+        return reservas;
     }
 
-    // ==========================================================
-    // === OBTENER TODAS LAS FACTURAS
-    // ==========================================================
-    public List<Factura> obtenerTodasFacturas() {
+    // 🔹 Obtener todas las facturas existentes
+    public List<Factura> obtenerFacturas() {
         List<Factura> facturas = new ArrayList<>();
-        String sql = "SELECT * FROM facturas ORDER BY fecha DESC";
-
-        try (Connection conn = Conexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+        String sql = "SELECT * FROM facturas";
+        try {
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
                 Factura f = new Factura();
-                f.setId(rs.getInt(COL_ID));
-                f.setIdReserva(rs.getInt(COL_ID_RESERVA));
-                f.setTotal(rs.getBigDecimal(COL_TOTAL));
-                f.setFecha(rs.getDate(COL_FECHA).toLocalDate());
-                f.setPagado(rs.getBoolean(COL_PAGADO));
+                f.setId(rs.getInt("id"));
+                f.setIdReserva(rs.getInt("id_reserva"));
+                f.setTotal(rs.getDouble("total"));
+                f.setFecha(rs.getString("fecha"));
+                f.setPagado(rs.getBoolean("pagado"));
                 facturas.add(f);
             }
-
         } catch (SQLException e) {
-            System.err.println("Error al obtener facturas: " + e.getMessage());
+            System.out.println("Error al obtener facturas: " + e.getMessage());
         }
         return facturas;
     }
 
-    // ==========================================================
-    // === OBTENER FACTURA POR ID
-    // ==========================================================
-    public Factura obtenerPorId(int id) {
-        String sql = "SELECT * FROM facturas WHERE id = ?";
-        try (Connection conn = Conexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Factura f = new Factura();
-                    f.setId(rs.getInt(COL_ID));
-                    f.setIdReserva(rs.getInt(COL_ID_RESERVA));
-                    f.setTotal(rs.getBigDecimal(COL_TOTAL));
-                    f.setFecha(rs.getDate(COL_FECHA).toLocalDate());
-                    f.setPagado(rs.getBoolean(COL_PAGADO));
-                    return f;
-                }
-            }
+    // 🔹 Generar una nueva factura
+    public boolean generarFactura(int idReserva, double total, String fecha) {
+        String sql = "INSERT INTO facturas (id_reserva, total, fecha, pagado) VALUES (?, ?, ?, 0)";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, idReserva);
+            ps.setDouble(2, total);
+            ps.setString(3, fecha);
+            ps.executeUpdate();
+            return true;
         } catch (SQLException e) {
-            System.err.println("Error al obtener factura por ID: " + e.getMessage());
+            System.out.println("Error al generar factura: " + e.getMessage());
+            return false;
         }
-        return null;
     }
 
-    // ==========================================================
-    // === OBTENER FACTURA POR ID DE RESERVA
-    // ==========================================================
-    public Factura obtenerPorReserva(int idReserva) {
-        String sql = "SELECT * FROM facturas WHERE id_reserva = ?";
-        try (Connection conn = Conexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idReserva);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Factura f = new Factura();
-                    f.setId(rs.getInt(COL_ID));
-                    f.setIdReserva(rs.getInt(COL_ID_RESERVA));
-                    f.setTotal(rs.getBigDecimal(COL_TOTAL));
-                    f.setFecha(rs.getDate(COL_FECHA).toLocalDate());
-                    f.setPagado(rs.getBoolean(COL_PAGADO));
-                    return f;
-                }
-            }
+    // Marcar factura como pagada
+    public boolean marcarFacturaPagada(int idFactura) {
+        String sql = "UPDATE facturas SET pagado = 1 WHERE id = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, idFactura);
+            ps.executeUpdate();
+            return true;
         } catch (SQLException e) {
-            System.err.println("Error al obtener factura por reserva: " + e.getMessage());
+            System.out.println("Error al marcar factura como pagada: " + e.getMessage());
+            return false;
         }
-        return null;
     }
 }
