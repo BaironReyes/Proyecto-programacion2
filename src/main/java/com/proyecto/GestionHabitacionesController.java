@@ -125,8 +125,7 @@ public class GestionHabitacionesController {
                         "Número: " + txtNumero.getText() + "\n" +
                         "Tipo: " + cmbTipo.getValue() + "\n" +
                         "Precio: $" + txtPrecio.getText() + "\n" +
-                        "Estado: " + cmbEstado.getValue() + "\n\n" +
-                        "La habitación ahora aparece en la tabla.");
+                        "Estado: " + cmbEstado.getValue());
 
         limpiarFormulario();
     }
