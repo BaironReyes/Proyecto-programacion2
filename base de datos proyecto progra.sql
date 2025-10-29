@@ -44,16 +44,19 @@ foreign key(id_cliente) references clientes (id) on delete restrict,
 foreign key(id_habitacion) references habitaciones(id) on delete restrict,
 check (check_in < check_out));
 
-create table facturas (
-id int auto_increment primary key,
-id_reserva int not null,
-total decimal(10,2) not null,
-fecha date default (current_date),
-pagado boolean not null default false,
+CREATE TABLE facturas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_reserva INT NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    fecha DATE NOT NULL,
+    pagado BOOLEAN DEFAULT FALSE,
 foreign key (id_reserva) references reservas(id) on delete restrict);
 
 create index reserva_habitacion on reservas(id_habitacion, check_in, check_out);
 create index reserva_cliente on reservas(id_cliente);
+
+
+
 
 
 

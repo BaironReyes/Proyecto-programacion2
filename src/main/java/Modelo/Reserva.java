@@ -11,7 +11,7 @@ public class Reserva {
     private LocalDate checkOut;
     private String estado;
     private LocalDateTime reservaCreada;
-    //private double total;
+    private double total;
 
     public Reserva() {
     }
@@ -80,10 +80,10 @@ public class Reserva {
         this.reservaCreada = reservaCreada;
     }
 
-    /*public double getTotal() {
+    public double getTotal() {
         return total;
     }
     public void setTotal(double total) {
         this.total = total;
-    }*/
+    }
 }

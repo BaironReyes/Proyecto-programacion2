@@ -1,10 +1,9 @@
 package com.proyecto;
 
-import dao.FacturaDAO;
-import dao.ReservaDAO;
 import Modelo.Factura;
-import Modelo.Reserva;
-import java.util.List;
+import dao.FacturacionDAO;
+import dao.Conexion;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,18 +16,20 @@ import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
+
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class FacturacionController {
 
     private static final Logger logger = Logger.getLogger(FacturacionController.class.getName());
 
-    private FacturaDAO facturaDAO = new FacturaDAO();
-    private ReservaDAO reservaDAO = new ReservaDAO();
+    private final FacturacionDAO facturacionDAO = new FacturacionDAO();
 
-    // Constantes para mensajes y estados
     private static final String MENSAJE_ERROR = "Error";
     private static final String ESTADO_PAGADA = "Pagada";
     private static final String ESTADO_PENDIENTE = "Pendiente";
@@ -54,8 +55,10 @@ public class FacturacionController {
 
     private ObservableList<FacturaTabla> facturasData = FXCollections.observableArrayList();
     private ObservableList<ReservaTabla> reservasData = FXCollections.observableArrayList();
-    private int contadorFacturas = 3;
 
+    // ==========================================================
+    // === CLASES DE TABLA
+    // ==========================================================
     public static class FacturaTabla {
         private final SimpleStringProperty id;
         private final SimpleStringProperty idReserva;
@@ -97,111 +100,123 @@ public class FacturacionController {
         public String getTotal() { return total.get(); }
     }
 
+    // ==========================================================
+    // === MÉTODOS PRINCIPALES
+    // ==========================================================
     @FXML
     public void initialize() {
-        logger.info("Controlador de Facturación inicializado");
+        logger.info("Inicializando módulo de Facturación con base de datos...");
 
         dpFechaInicio.setValue(LocalDate.now().minusDays(30));
         dpFechaFin.setValue(LocalDate.now());
 
         configurarTablas();
-        cargarDatosDesdeBD();
+        cargarFacturasDesdeBD();
+        cargarReservasDesdeBD();
         calcularReportes();
     }
 
     private void configurarTablas() {
-        if (tablaFacturas != null && colFacturaId != null) {
-            colFacturaId.setCellValueFactory(new PropertyValueFactory<>("id"));
-            colReservaId.setCellValueFactory(new PropertyValueFactory<>("idReserva"));
-            colFacturaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
-            colFacturaFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-            colFacturaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-            tablaFacturas.setItems(facturasData);
-        }
+        // Facturas
+        colFacturaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colReservaId.setCellValueFactory(new PropertyValueFactory<>("idReserva"));
+        colFacturaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+        colFacturaFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colFacturaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        tablaFacturas.setItems(facturasData);
 
-        if (tablaReservasParaFacturar != null && colReservaId2 != null) {
-            colReservaId2.setCellValueFactory(new PropertyValueFactory<>("id"));
-            colReservaCliente.setCellValueFactory(new PropertyValueFactory<>("cliente"));
-            colReservaHabitacion.setCellValueFactory(new PropertyValueFactory<>("habitacion"));
-            colReservaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
-            tablaReservasParaFacturar.setItems(reservasData);
-        }
+        // Reservas para facturar (esta parte la llenas desde tu DAO de Reservas)
+        colReservaId2.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colReservaCliente.setCellValueFactory(new PropertyValueFactory<>("cliente"));
+        colReservaHabitacion.setCellValueFactory(new PropertyValueFactory<>("habitacion"));
+        colReservaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+        tablaReservasParaFacturar.setItems(reservasData);
     }
 
-    private void cargarDatosDesdeBD() {
-        logger.info("Cargando datos reales desde BD");
-
-        // Limpiar listas
-        reservasData.clear();
+    // ==========================================================
+    // === CARGA DE DATOS
+    // ==========================================================
+    private void cargarFacturasDesdeBD() {
         facturasData.clear();
-
-        // Cargar reservas sin facturar
-        List<Reserva> reservas = reservaDAO.obtenerReservasActivas();
-        for (Reserva r : reservas) {
-            reservasData.add(new ReservaTabla(
-                    String.valueOf(r.getId()),
-                    String.valueOf(r.getIdCliente()),
-                    String.valueOf(r.getIdHabitacion()),
-                    "Pendiente" // en lugar del total
-            ));
-        }
-
-        // Cargar facturas
-        List<Factura> facturas = facturaDAO.obtenerTodasFacturas();
+        List<Factura> facturas = facturacionDAO.obtenerTodasFacturas();
         for (Factura f : facturas) {
             facturasData.add(new FacturaTabla(
-                    String.valueOf(f.getIdFactura()),
+                    String.valueOf(f.getId()),
                     String.valueOf(f.getIdReserva()),
-                    "$" + String.format("%.2f", f.getTotal()),
-                    f.getFecha().toString(),
-                    f.getEstado()
+                    "$" + f.getTotal(),
+                    f.getFecha() != null ? f.getFecha().toString() : "",
+                    f.isPagado() ? ESTADO_PAGADA : ESTADO_PENDIENTE
             ));
         }
-
     }
 
+    private void cargarReservasDesdeBD() {
+        // 🚧 Aquí debes conectar con tu ReservaDAO real
+        // por ahora, dejamos algunos ejemplos visuales
+        reservasData.clear();
+        reservasData.add(new ReservaTabla("1", "Bairon Reyes", "267", "$210.00"));
+        reservasData.add(new ReservaTabla("2", "Xiomara Arriaga", "280", "$330.00"));
+        reservasData.add(new ReservaTabla("3", "Ricardo Montoya", "300", "$675.00"));
+    }
 
+    // ==========================================================
+    // === ACCIONES DE USUARIO
+    // ==========================================================
     @FXML
     private void generarFactura() {
-        logger.info("Generando nueva factura");
-
         ReservaTabla reservaSeleccionada = tablaReservasParaFacturar.getSelectionModel().getSelectedItem();
         if (reservaSeleccionada == null) {
             mostrarAlerta(MENSAJE_ERROR, "Seleccione una reserva para facturar");
             return;
         }
 
-        String idFactura = String.valueOf(contadorFacturas++);
-        facturasData.add(new FacturaTabla(
-                idFactura,
-                reservaSeleccionada.getId(),
-                reservaSeleccionada.getTotal(),
-                LocalDate.now().toString(),
-                ESTADO_PENDIENTE
-        ));
+        try {
+            int idReserva = Integer.parseInt(reservaSeleccionada.getId());
+            BigDecimal total = new BigDecimal(reservaSeleccionada.getTotal().replace("$", "").replace(",", ""));
 
-        reservasData.remove(reservaSeleccionada);
+            if (facturacionDAO.crearFactura(idReserva, total)) {
+                mostrarAlerta("Éxito", "Factura creada correctamente");
+                cargarFacturasDesdeBD();
+                reservasData.remove(reservaSeleccionada);
+                calcularReportes();
+            } else {
+                mostrarAlerta(MENSAJE_ERROR, "No se pudo crear la factura");
+            }
+        } catch (Exception e) {
+            mostrarAlerta(MENSAJE_ERROR, "Error al generar factura: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-        calcularReportes();
+    @FXML
+    private void marcarComoPagado() {
+        FacturaTabla facturaSeleccionada = tablaFacturas.getSelectionModel().getSelectedItem();
+        if (facturaSeleccionada == null) {
+            mostrarAlerta(MENSAJE_ERROR, "Seleccione una factura para marcar como pagada");
+            return;
+        }
 
-        mostrarAlerta("Factura Generada",
-                "Factura generada exitosamente:\n" +
-                        "ID Factura: " + idFactura + "\n" +
-                        "ID Reserva: " + reservaSeleccionada.getId() + "\n" +
-                        "Cliente: " + reservaSeleccionada.getCliente() + "\n" +
-                        "Total: " + reservaSeleccionada.getTotal() + "\n" +
-                        "Estado: " + ESTADO_PENDIENTE);
+        try {
+            int idFactura = Integer.parseInt(facturaSeleccionada.getId());
+            if (facturacionDAO.marcarComoPagada(idFactura)) {
+                mostrarAlerta("Éxito", "Factura marcada como pagada");
+                cargarFacturasDesdeBD();
+                calcularReportes();
+            } else {
+                mostrarAlerta(MENSAJE_ERROR, "No se pudo actualizar el estado de la factura");
+            }
+        } catch (Exception e) {
+            mostrarAlerta(MENSAJE_ERROR, "Error al actualizar factura: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void generarReporteIngresos() {
-        logger.info("Generando reporte de ingresos");
-
         if (dpFechaInicio.getValue() == null || dpFechaFin.getValue() == null) {
             mostrarAlerta(MENSAJE_ERROR, "Seleccione fechas para el reporte");
             return;
         }
-
         calcularReportes();
 
         String reporte = "Reporte de Ingresos\n" +
@@ -214,58 +229,17 @@ public class FacturacionController {
     }
 
     @FXML
-    private void marcarComoPagado() {
-        logger.info("Marcando factura como pagada");
-
-        // Obtener la factura seleccionada
-        FacturaTabla facturaSeleccionada = tablaFacturas.getSelectionModel().getSelectedItem();
-        if (facturaSeleccionada == null) {
-            mostrarAlerta(MENSAJE_ERROR, "Seleccione una factura para marcar como pagada");
-            return;
-        }
-
-        try {
-            // Actualizar en la base de datos
-            boolean ok = facturaDAO.actualizarEstado(
-                    Integer.parseInt(facturaSeleccionada.getId()),
-                    ESTADO_PAGADA
-            );
-
-            if (ok) {
-                // Actualizar en la tabla de la interfaz
-                facturaSeleccionada.estado.set(ESTADO_PAGADA);
-                tablaFacturas.refresh();
-
-                mostrarAlerta("Factura Actualizada",
-                        "Factura ID: " + facturaSeleccionada.getId() + " marcada como Pagada.");
-                logger.info("Factura ID " + facturaSeleccionada.getId() + " marcada como pagada correctamente.");
-            } else {
-                mostrarAlerta(MENSAJE_ERROR, "No se pudo actualizar la factura en la base de datos.");
-                logger.warning("Error al actualizar el estado de la factura en la base de datos.");
-            }
-
-        } catch (Exception e) {
-            mostrarAlerta(MENSAJE_ERROR, "Error al actualizar la factura: " + e.getMessage());
-            logger.severe("Error al marcar factura como pagada: " + e.getMessage());
-        }
-
-        // Recalcular reportes para actualizar totales y estado general
-        calcularReportes();
-    }
-
-
-    @FXML
     private void volverAlDashboard(ActionEvent event) throws IOException {
-        logger.info("Volviendo al Dashboard");
-
         Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
         Scene scene = new Scene(root, 800, 600);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
         stage.setScene(scene);
         stage.setTitle("Sistema de Hotel");
     }
 
+    // ==========================================================
+    // === REPORTES Y UTILIDADES
+    // ==========================================================
     private void calcularReportes() {
         double totalIngresos = 0;
         int facturasEnPeriodo = 0;
@@ -286,7 +260,7 @@ public class FacturacionController {
                     }
                 }
             } catch (Exception _) {
-                logger.warning("Error al hacer fecha de factura: " + factura.getFecha());
+                logger.warning("Error al procesar fecha de factura: " + factura.getFecha());
             }
         }
 
@@ -301,10 +275,10 @@ public class FacturacionController {
 
     private double procesarTotalFactura(String totalStr) {
         try {
-            String totalLimpio = totalStr.replace("$", "").replace(",", "");
+            String totalLimpio = totalStr.replace("$", "").replace(",", "").trim();
             return Double.parseDouble(totalLimpio);
         } catch (NumberFormatException _) {
-            logger.warning("Error al hacer el total de factura: " + totalStr);
+            logger.warning("Error al procesar total de factura: " + totalStr);
             return 0.0;
         }
     }

@@ -18,6 +18,7 @@ public class ReservaDAO {
             stmt.setInt(2, reserva.getIdHabitacion());
             stmt.setDate(3, java.sql.Date.valueOf(reserva.getCheckIn()));
             stmt.setDate(4, java.sql.Date.valueOf(reserva.getCheckOut()));
+            //stmt.setDouble(5,reserva.getTotal());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
