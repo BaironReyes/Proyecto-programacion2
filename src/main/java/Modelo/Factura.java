@@ -10,8 +10,6 @@ public class Factura {
     private LocalDate fecha;
     private boolean pagado;
 
-    public Factura() {
-    }
 
     public Factura(int idReserva, BigDecimal total) {
         this.idReserva = idReserva;
