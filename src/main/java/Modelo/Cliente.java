@@ -12,8 +12,6 @@ public class Cliente {
     private String tipoIdentificacion;
     private LocalDateTime fechaCreacion;
 
-    public Cliente() {
-    }
 
     public Cliente(String nombre, String apellido, String email, String telefono, String identificacion, String tipoIdentificacion) {
         this.nombre = nombre;
