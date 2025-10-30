@@ -12,8 +12,6 @@ public class Reserva {
     private String estado;
     private LocalDateTime reservaCreada;
 
-    public Reserva() {
-    }
 
     public Reserva(int idCliente, int idHabitacion, LocalDate checkIn, LocalDate checkOut, String estado) {
         this.idCliente = idCliente;
