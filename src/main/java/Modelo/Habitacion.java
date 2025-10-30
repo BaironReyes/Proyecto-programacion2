@@ -9,8 +9,6 @@ package Modelo;
         private BigDecimal precio;
         private String estado;
 
-        public Habitacion() {
-        }
 
         public Habitacion(String numeroHabitacion, String tipoHabitacion, BigDecimal precio, String estado) {
             this.numeroHabitacion = numeroHabitacion;
